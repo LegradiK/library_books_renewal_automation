@@ -70,12 +70,13 @@ def renew_library_books(page, user_list, today):
             # print(renew_books)
 
             due_lines = "".join(f"  - {b['title']} (Due: {b['due_date']})\n" for b in must_return_books)
+            book_word = "book" if len(renew_books) == 1 else "books"
             message = (
                 f"User: {user[0]}\n"
                 f"Library:Bolton\n"
                 f"Currently Borrowing: {len(library_books)}\n"
                 f"Must return:\n{due_lines}"
-                f"{len(renew_books)} books got renewed\n"
+                f"*{len(renew_books)} {book_word} got renewed.*\n"
             )
             print(message)
 

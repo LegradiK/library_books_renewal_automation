@@ -33,7 +33,6 @@ def renew_borrowbox_books(page, user_list, today):
             rows = page.locator(".loaned-product-tile").all()
 
             borrowbox_books = {}
-            rows = page.locator("products").all()
             book_num = 1
             renew_books = []
             return_books = []
@@ -54,22 +53,25 @@ def renew_borrowbox_books(page, user_list, today):
                 book_num += 1
 
             for book_num, book in borrowbox_books.items():
-                if book["due_in_days"] <= 3:
+                if book["due_in_days"] <= 10:
                     if book["row"].locator("button", has_text="Renew").count() > 0:
                         book["row"].locator("button", has_text="Renew").click()
                         renew_books.append(book)
+                        if page.get_by_text("Confirm Renewal", exact=True).wait_for(state="visible"):
+                            page.get_by_text("Confirm Renewal", exact=True).click()
                     else:
                         return_books.append(book)
                         # print(must_return_books)
                         # print(renew_books)
 
             due_lines = "".join(f"  - {b['title']} (Due: {b['expiry_date']})\n" for b in return_books)
+            book_word = "book" if len(renew_books) == 1 else "books"
             message = (
                 f"User: {user[0]}\n"
                 f"Library:Borrow Box\n"
                 f"Currently Borrowing: {len(borrowbox_books)}\n"
                 f"Must return:\n{due_lines}"
-                f"{len(renew_books)} books got renewed\n"
+                f"*{len(renew_books)} {book_word} got renewed.*\n"
             )
             print(message)
 
