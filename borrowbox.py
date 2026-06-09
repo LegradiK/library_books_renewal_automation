@@ -27,8 +27,9 @@ def renew_borrowbox_books(page, user_list, today):
         try:
             page.locator(".products").first.wait_for(state="visible")
         except PlaywrightTimeoutError:
-            print(f"User: {user[0]}\n"
+            message = (f"User: {user[0]}\n"
                   f"No borrowed items found")
+            print(message)
         else:
             rows = page.locator(".loaned-product-tile").all()
 

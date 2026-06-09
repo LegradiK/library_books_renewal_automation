@@ -24,8 +24,9 @@ def renew_library_books(page, user_list, today):
         try:
             page.locator(".brw-dashboard-item").first.wait_for(state="visible", timeout=3000)
         except PlaywrightTimeoutError:
-            print(f"User: {user[0]}\n"
-                  f"No borrowed items found\n")
+            message = (f"User: {user[0]}\n"
+                       f"No borrowed items found\n")
+            print(message)
         else:
             page.locator(".brw-dashboard-item").first.click()
 
