@@ -5,7 +5,7 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 def renew_library_books(page, user_list, today):
     BOLTON_SPYDUS = "https://bolton.spydus.co.uk/cgi-bin/spydus.exe/MSGTRN/OPAC/HOME"
 
-    page.goto(BOLTON_SPYDUS, wait_until="domcontentloaded", timeout=60000)
+    page.goto(BOLTON_SPYDUS, wait_until="load", timeout=60000)
 
     for user in user_list:
 
