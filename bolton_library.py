@@ -9,10 +9,14 @@ def renew_library_books(page, user_list, today):
     print("opened the webpage, waited 6 seconds")
 
     try:
-        page.locator('button.btn-close.text-reset[data-bs-dismiss="offcanvas"]').click(timeout=8000)
-        print("clicked")
+        cookie_close = page.locator('button.btn-close.text-reset[data-bs-dismiss="offcanvas"]')
+        cookie_close.wait_for(state="visible", timeout=8000)
+        cookie_close.click()
+        # wait for it to fully disappear before doing anything else
+        cookie_close.wait_for(state="hidden", timeout=5000)
+        print("cookie banner closed")
     except PlaywrightTimeoutError:
-        pass
+        print("no cookie banner found")
 
     page.wait_for_timeout(3000)
     print("waiting 3 seconds")
