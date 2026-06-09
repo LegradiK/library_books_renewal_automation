@@ -6,7 +6,12 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 def renew_borrowbox_books(page, user_list, today):
     BOLTON_BORROWBOX = "https://bolton.borrowbox.com/"
 
-    page.goto(BOLTON_BORROWBOX, wait_until="load", timeout=60000)
+    page.goto(BOLTON_BORROWBOX, wait_until="domcontentloaded", timeout=60000)
+
+    try:
+        page.locator("button.button-white.size-large", has_text="Reject").click(timeout=8000)
+    except PlaywrightTimeoutError:
+        pass
 
     for user in user_list:
         # click login button
