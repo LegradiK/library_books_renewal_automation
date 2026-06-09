@@ -6,20 +6,26 @@ def renew_library_books(page, user_list, today):
     BOLTON_SPYDUS = "https://bolton.spydus.co.uk/cgi-bin/spydus.exe/MSGTRN/OPAC/HOME"
 
     page.goto(BOLTON_SPYDUS, wait_until="domcontentloaded", timeout=60000)
+    print("opened the webpage, waited 6 seconds")
 
     try:
-        page.locator('[data-bs-dismiss="offcanvas"]').click(timeout=8000)
+        page.locator('button.btn-close.text-reset[data-bs-dismiss="offcanvas"]').click(timeout=8000)
+        print("clicked")
     except PlaywrightTimeoutError:
         pass
 
     page.wait_for_timeout(3000)
+    print("waiting 3 seconds")
 
     for user in user_list:
 
         # clicking login button to show login area
         login_button = page.locator('button[id="navbarLoginMenuLink1"]')
+        print("looking for login_button")
         login_button.wait_for(state='visible')
+        print("found login button")
         login_button.click()
+        print("login button clicked")
 
         # inserting credentials
         page.locator("#user_name").wait_for(state="visible")
