@@ -6,11 +6,9 @@ def renew_library_books(page, user_list, today):
     BOLTON_SPYDUS = "https://bolton.spydus.co.uk/cgi-bin/spydus.exe/MSGTRN/OPAC/HOME"
 
     page.goto(BOLTON_SPYDUS, wait_until="domcontentloaded", timeout=60000)
-    page.screenshot(path="debug_1_loaded.png")
 
     try:
-        page.locator("#onetrust-accept-btn-handler").click(timeout=5000)
-        page.screenshot(path="debug_2_after_cookie.png")
+        page.get_by_role("button", name="Accept all cookies").click(timeout=8000)
     except PlaywrightTimeoutError:
         pass
 
@@ -20,7 +18,6 @@ def renew_library_books(page, user_list, today):
         login_button = page.locator('button[id="navbarLoginMenuLink1"]')
         login_button.wait_for(state='visible')
         login_button.click()
-        page.screenshot(path="debug_3_after_login_click.png")
 
         # inserting credentials
         page.locator("#user_name").wait_for(state="visible")
