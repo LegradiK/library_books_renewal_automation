@@ -22,7 +22,9 @@ jobs:
           playwright install chromium
           playwright install-deps chromium
 
-      - name: Run renewal script
+      - name: Run renewal script (continue on error for debugging)
+        id: run_script
+        continue-on-error: true
         env:
           USER1_USERNAME: ${{ secrets.USER1_USERNAME }}
           USER1_PASSWORD: ${{ secrets.USER1_PASSWORD }}
@@ -32,3 +34,11 @@ jobs:
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
         run: python main.py
+
+      - name: Upload debug screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-screenshots
+          path: "*.png"
+          if-no-files-found: ignore

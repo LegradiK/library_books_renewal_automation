@@ -6,6 +6,7 @@ def renew_library_books(page, user_list, today):
     BOLTON_SPYDUS = "https://bolton.spydus.co.uk/cgi-bin/spydus.exe/MSGTRN/OPAC/HOME"
 
     page.goto(BOLTON_SPYDUS, wait_until="load", timeout=60000)
+    page.screenshot(path="debug_bolton_loaded.png")
 
     for user in user_list:
 
@@ -13,6 +14,7 @@ def renew_library_books(page, user_list, today):
         login_button = page.locator('button[id="navbarLoginMenuLink1"]')
         login_button.wait_for(state='visible')
         login_button.click()
+        page.screenshot(path="debug_bolton_after_click.png")
 
         # inserting credentials
         page.locator("#user_name").wait_for(state="visible")
