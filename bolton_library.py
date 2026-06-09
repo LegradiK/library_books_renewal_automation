@@ -22,10 +22,10 @@ def renew_library_books(page, user_list, today):
 
         # find currently borrowed items
         try:
-            page.locator(".brw-dashboard-item").first.wait_for(state="visible")
+            page.locator(".brw-dashboard-item").first.wait_for(state="visible", timeout=3000)
         except PlaywrightTimeoutError:
             print(f"User: {user[0]}\n"
-                  f"No borrowed items found")
+                  f"No borrowed items found\n")
         else:
             page.locator(".brw-dashboard-item").first.click()
 
@@ -56,7 +56,7 @@ def renew_library_books(page, user_list, today):
             for book_num, book in library_books.items():
                 # check if due date is closer than x days and check the tickbox
                 day_dfference = (book["due_date"] - today).days
-                if day_dfference <= 3:
+                if day_dfference <= 20:
                     if book["renewed"] >= 2:
                         must_return_books.append(book)
                     else:
@@ -69,13 +69,13 @@ def renew_library_books(page, user_list, today):
             # print(must_return_books)
             # print(renew_books)
 
-            due_lines = "".join(f"  - {b['title']} (Due: {b['due_date']})\n" for b in must_return_books)
+            due_lines = "".join(f"  - {b['title']} (Due: {b['due_date']})\n" for b in must_return_books) if must_return_books else "None"
             book_word = "book" if len(renew_books) == 1 else "books"
             message = (
                 f"User: {user[0]}\n"
                 f"Library:Bolton\n"
                 f"Currently Borrowing: {len(library_books)}\n"
-                f"Must return:\n{due_lines}"
+                f"Must return:{due_lines}\n"
                 f"*{len(renew_books)} {book_word} got renewed.*\n"
             )
             print(message)
@@ -85,3 +85,6 @@ def renew_library_books(page, user_list, today):
             # print("Log out")
             page.locator("#navbarLoginMenuLinkName").click()
             page.get_by_role("link", name="Logout").first.click()
+
+
+

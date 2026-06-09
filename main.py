@@ -31,8 +31,6 @@ with sync_playwright() as pw:
     # create page aka browser tab which we'll be using to do everything
     page = context.new_page()
 
-    # renew_library_books(page, user_list, today)
+    renew_library_books(page, user_list, today)
     renew_borrowbox_books(page, user_list, today)
 
-    # here to not to close the screen
-    input("Press Enter to close the browser...")

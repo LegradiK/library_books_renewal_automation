@@ -53,24 +53,36 @@ def renew_borrowbox_books(page, user_list, today):
                 book_num += 1
 
             for book_num, book in borrowbox_books.items():
-                if book["due_in_days"] <= 10:
+                if book["due_in_days"] <= 30:
                     if book["row"].locator("button", has_text="Renew").count() > 0:
                         book["row"].locator("button", has_text="Renew").click()
                         renew_books.append(book)
-                        if page.get_by_text("Confirm Renewal", exact=True).wait_for(state="visible"):
-                            page.get_by_text("Confirm Renewal", exact=True).click()
+                        confirm_renewal = page.locator("button.button-warning", has_text="Confirm Renewal")
+                        confirm_renewal.wait_for(state="visible")
+                        confirm_renewal.click()
+                        ok_btn = page.locator("button.button-neutral", has_text="OK")
+                        close_btn = page.locator("button.button-neutral", has_text="Close")
+                        try:
+                            ok_btn.wait_for(state="visible", timeout=3000)
+                        except PlaywrightTimeoutError:
+                            pass
+                        if ok_btn.is_visible():
+                            ok_btn.click()
+                        else:
+                            close_btn.wait_for(state="visible")
+                            close_btn.click()
                     else:
                         return_books.append(book)
                         # print(must_return_books)
                         # print(renew_books)
 
-            due_lines = "".join(f"  - {b['title']} (Due: {b['expiry_date']})\n" for b in return_books)
+            due_lines = "".join(f"  - {b['title']} (Due: {b['expiry_date']})\n" for b in return_books) if return_books else "None"
             book_word = "book" if len(renew_books) == 1 else "books"
             message = (
                 f"User: {user[0]}\n"
                 f"Library:Borrow Box\n"
                 f"Currently Borrowing: {len(borrowbox_books)}\n"
-                f"Must return:\n{due_lines}"
+                f"Must return:{due_lines}\n"
                 f"*{len(renew_books)} {book_word} got renewed.*\n"
             )
             print(message)
