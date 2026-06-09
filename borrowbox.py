@@ -13,6 +13,8 @@ def renew_borrowbox_books(page, user_list, today):
     except PlaywrightTimeoutError:
         pass
 
+    page.wait_for_timeout(3000)
+
     for user in user_list:
         # click login button
         login_button = page.get_by_role("link", name="Sign In")

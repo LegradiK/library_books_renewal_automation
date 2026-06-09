@@ -12,6 +12,8 @@ def renew_library_books(page, user_list, today):
     except PlaywrightTimeoutError:
         pass
 
+    page.wait_for_timeout(3000)
+
     for user in user_list:
 
         # clicking login button to show login area
