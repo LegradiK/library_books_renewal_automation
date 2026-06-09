@@ -8,7 +8,7 @@ def renew_library_books(page, user_list, today):
     page.goto(BOLTON_SPYDUS, wait_until="domcontentloaded", timeout=60000)
 
     try:
-        page.locator('button.btn-close[data-bs-dismiss="offcanvas"]').click(timeout=8000)
+        page.locator('[data-bs-dismiss="offcanvas"]').click(timeout=8000)
     except PlaywrightTimeoutError:
         pass
 
