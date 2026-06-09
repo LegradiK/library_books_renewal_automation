@@ -7,8 +7,9 @@ def renew_library_books(page, user_list, today):
 
     page.goto(BOLTON_SPYDUS, wait_until="domcontentloaded", timeout=60000)
 
+    # Handle cookie banner - reject if present
     try:
-        page.get_by_role("button", name="Accept all cookies").click(timeout=8000)
+        page.get_by_role("button", name="Reject all cookies").click(timeout=8000)
     except PlaywrightTimeoutError:
         pass
 
