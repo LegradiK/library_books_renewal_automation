@@ -8,6 +8,7 @@ on:
 jobs:
   renew:
     runs-on: ubuntu-latest
+    environment: LIBRARY_BORROWBOX_RENEWAL_AUTOMATION
     steps:
       - uses: actions/checkout@v5
 
@@ -21,17 +22,13 @@ jobs:
           playwright install chromium
           playwright install-deps chromium
 
-      - name: Create env file
-        run: |
-          cat > data.env <<EOF
-          USER1_USERNAME=${{ secrets.USER1_USERNAME }}
-          USER1_PASSWORD=${{ secrets.USER1_PASSWORD }}
-          USER2_USERNAME=${{ secrets.USER2_USERNAME }}
-          USER2_PASSWORD=${{ secrets.USER2_PASSWORD }}
-          EMAIL_SENDER=${{ secrets.EMAIL_SENDER }}
-          EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
-          EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
-          EOF
-
       - name: Run renewal script
+        env:
+          USER1_USERNAME: ${{ secrets.USER1_USERNAME }}
+          USER1_PASSWORD: ${{ secrets.USER1_PASSWORD }}
+          USER2_USERNAME: ${{ secrets.USER2_USERNAME }}
+          USER2_PASSWORD: ${{ secrets.USER2_PASSWORD }}
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
         run: python main.py

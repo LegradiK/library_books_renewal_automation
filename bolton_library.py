@@ -82,10 +82,12 @@ def renew_library_books(page, user_list, today):
             print(message)
 
         finally:
-            # clicking user menu and logout
-            # print("Log out")
-            page.locator("#navbarLoginMenuLinkName").click()
-            page.get_by_role("link", name="Logout").first.click()
+            try:
+                page.locator("#navbarLoginMenuLinkName").wait_for(state="visible", timeout=10000)
+                page.locator("#navbarLoginMenuLinkName").click()
+                page.get_by_role("link", name="Logout").first.click()
+            except PlaywrightTimeoutError:
+                print(f"Could not log out user {user[0]} — login may have failed")
 
 
 
