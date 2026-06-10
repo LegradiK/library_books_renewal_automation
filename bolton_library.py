@@ -27,6 +27,9 @@ def renew_library_books(page, user_list, today):
         login_button.wait_for(state='visible')
         login_button.click()
 
+        page.wait_for_timeout(1000)
+        page.screenshot(path="debug_bolton_1b_after_login_click.png")
+
         # inserting credentials
         try:
             page.locator("#user_name").wait_for(state="visible")
