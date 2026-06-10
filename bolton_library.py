@@ -26,11 +26,7 @@ def renew_library_books(page, user_list, today):
         login_button = page.locator('button[id="navbarLoginMenuLink1"]')
         login_button.wait_for(state='visible')
         page.screenshot(path="debug_bolton_1b_after_login_click.png")
-        login_button.click()
-
-        page.wait_for_timeout(1000)
-        
-
+      
         # inserting credentials (use :visible since the page has a hidden duplicate login form for mobile)
         try:
             page.locator("#user_name:visible").wait_for(state="visible")
@@ -39,6 +35,7 @@ def renew_library_books(page, user_list, today):
             raise
         page.locator("#user_name:visible").fill(user[0])
         page.locator("#user_password:visible").fill(user[1])
+        page.screenshot(path="debug_bolton_credentials_inserted.png")
         page.locator(".btn-submit:visible").click()
 
         # find currently borrowed items
