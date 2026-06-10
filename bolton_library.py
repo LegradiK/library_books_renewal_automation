@@ -25,10 +25,11 @@ def renew_library_books(page, user_list, today):
         # clicking login button to show login area
         login_button = page.locator('button[id="navbarLoginMenuLink1"]')
         login_button.wait_for(state='visible')
+        page.screenshot(path="debug_bolton_1b_after_login_click.png")
         login_button.click()
 
         page.wait_for_timeout(1000)
-        page.screenshot(path="debug_bolton_1b_after_login_click.png")
+        
 
         # inserting credentials (use :visible since the page has a hidden duplicate login form for mobile)
         try:
