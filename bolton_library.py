@@ -30,15 +30,15 @@ def renew_library_books(page, user_list, today):
         page.wait_for_timeout(1000)
         page.screenshot(path="debug_bolton_1b_after_login_click.png")
 
-        # inserting credentials
+        # inserting credentials (use :visible since the page has a hidden duplicate login form for mobile)
         try:
-            page.locator("#user_name").wait_for(state="visible")
+            page.locator("#user_name:visible").wait_for(state="visible")
         except PlaywrightTimeoutError:
             page.screenshot(path="debug_bolton_2_login_panel.png")
             raise
-        page.locator("#user_name").fill(user[0])
-        page.locator("#user_password").fill(user[1])
-        page.locator(".btn-submit").click()
+        page.locator("#user_name:visible").fill(user[0])
+        page.locator("#user_password:visible").fill(user[1])
+        page.locator(".btn-submit:visible").click()
 
         # find currently borrowed items
         try:
