@@ -2,6 +2,7 @@ import io
 import os
 import smtplib
 import sys
+import traceback
 from datetime import date
 from email.mime.text import MIMEText
 
@@ -38,6 +39,8 @@ try:
 
         # renew_library_books(page, user_list, today)
         renew_borrowbox_books(page, user_list, today)
+except Exception:
+    traceback.print_exc()
 finally:
     sys.stdout = sys.__stdout__
 
