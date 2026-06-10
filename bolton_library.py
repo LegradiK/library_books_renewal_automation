@@ -8,11 +8,11 @@ def renew_library_books(page, user_list, today):
     page.goto(BOLTON_SPYDUS, wait_until="domcontentloaded", timeout=60000)
 
     try:
-        cookie_close = page.locator('button.btn-close.text-reset[data-bs-dismiss="offcanvas"]')
-        cookie_close.wait_for(state="visible", timeout=8000)
-        cookie_close.click()
+        accept_cookies = page.locator('#offcanvasCookie_all')
+        accept_cookies.wait_for(state="visible", timeout=8000)
+        accept_cookies.click()
         # wait for it to fully disappear before doing anything else
-        cookie_close.wait_for(state="hidden", timeout=5000)
+        accept_cookies.wait_for(state="hidden", timeout=5000)
     except PlaywrightTimeoutError:
         pass
 
