@@ -36,7 +36,7 @@ try:
         context = browser.new_context(viewport={"width": 1920, "height": 1080})
         page = context.new_page()
 
-        # renew_library_books(page, user_list, today)
+        renew_library_books(page, user_list, today)
         renew_borrowbox_books(page, user_list, today)
 finally:
     sys.stdout = sys.__stdout__
