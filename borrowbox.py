@@ -9,7 +9,7 @@ def renew_borrowbox_books(page, user_list, today):
     page.goto(BOLTON_BORROWBOX, wait_until="domcontentloaded", timeout=60000)
 
     try:
-        page.locator("button.button-white.size-large", has_text="Reject").click(timeout=8000)
+        page.locator("button.button-white.size-large", has_text="Accept").click(timeout=8000)
     except PlaywrightTimeoutError:
         pass
 

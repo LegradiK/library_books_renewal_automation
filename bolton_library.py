@@ -16,6 +16,8 @@ def renew_library_books(page, user_list, today):
     except PlaywrightTimeoutError:
         pass
 
+    page.screenshot(path="debug_bolton_1_after_cookies.png")
+
     page.wait_for_timeout(3000)
 
     for user in user_list:
@@ -24,9 +26,13 @@ def renew_library_books(page, user_list, today):
         login_button = page.locator('button[id="navbarLoginMenuLink1"]')
         login_button.wait_for(state='visible')
         login_button.click()
-        
+
         # inserting credentials
-        page.locator("#user_name").wait_for(state="visible")
+        try:
+            page.locator("#user_name").wait_for(state="visible")
+        except PlaywrightTimeoutError:
+            page.screenshot(path="debug_bolton_2_login_panel.png")
+            raise
         page.locator("#user_name").fill(user[0])
         page.locator("#user_password").fill(user[1])
         page.locator(".btn-submit").click()

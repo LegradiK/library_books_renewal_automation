@@ -5,7 +5,7 @@ import sys
 from datetime import date
 from email.mime.text import MIMEText
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 
 from bolton_library import renew_library_books
@@ -13,7 +13,7 @@ from borrowbox import renew_borrowbox_books
 
 sys.stdout.reconfigure(line_buffering=True)
 
-load_dotenv("data.env")
+# load_dotenv("data.env")
 
 USER1_USERNAME = os.getenv("USER1_USERNAME")
 USER1_PASSWORD = os.getenv("USER1_PASSWORD")
