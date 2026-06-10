@@ -25,9 +25,16 @@ def renew_library_books(page, user_list, today):
         # clicking login button to show login area
         login_button = page.locator('button[id="navbarLoginMenuLink1"]')
         login_button.wait_for(state='visible')
-        page.screenshot(path="debug_bolton_1b_after_login_click.png")
         login_button.click()
-      
+        page.screenshot(path="debug_bolton_1b_after_login_click.png")
+
+        # debug: inspect every #user_name match to understand duplicates
+        all_user_name = page.locator("#user_name")
+        print(f"#user_name count: {all_user_name.count()}")
+        for i in range(all_user_name.count()):
+            el = all_user_name.nth(i)
+            print(f"  [{i}] visible={el.is_visible()} box={el.bounding_box()}")
+
         # inserting credentials (use :visible since the page has a hidden duplicate login form for mobile)
         try:
             page.locator("#user_name:visible").wait_for(state="visible")
