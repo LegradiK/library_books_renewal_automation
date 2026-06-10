@@ -19,8 +19,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install playwright python-dotenv
-          playwright install firefox
-          playwright install-deps firefox
+          playwright install chromium
+          playwright install-deps chromium
 
       - name: Run renewal script (continue on error for debugging)
         id: run_script

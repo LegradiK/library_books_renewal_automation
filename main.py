@@ -32,7 +32,7 @@ sys.stdout = buffer
 
 try:
     with sync_playwright() as pw:
-        browser = pw.firefox.launch(headless=True)
+        browser = pw.chromium.launch(headless=True)
         context = browser.new_context(viewport={"width": 1920, "height": 1080})
         page = context.new_page()
 
