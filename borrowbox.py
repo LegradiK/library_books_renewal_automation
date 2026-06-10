@@ -13,6 +13,7 @@ def renew_borrowbox_books(page, user_list, today):
     except PlaywrightTimeoutError:
         pass
 
+    print("opened the page, dealth with cookies")
     page.wait_for_timeout(3000)
 
     for user in user_list:
@@ -20,15 +21,18 @@ def renew_borrowbox_books(page, user_list, today):
         login_button = page.get_by_role("link", name="Sign In")
         login_button.wait_for(state='visible')
         login_button.click()
+        print("signin button clicked")
 
         #insert credentials to login
         page.locator("input[name='barcode']").wait_for(state="visible")
         page.locator("input[name='barcode']").fill(user[0])
         page.locator("input[name='password']").fill(user[1])
         login_button = page.get_by_role("button", name="Sign In").first.click()
+        print("signin completed")
 
         # open currently borrowing books page
         page.get_by_role("link", name="My Loans").click()
+        print("My Loans area is opened")
 
         # find loaned products
         try:
@@ -39,6 +43,7 @@ def renew_borrowbox_books(page, user_list, today):
             print(message)
         else:
             rows = page.locator(".loaned-product-tile").all()
+            print("all the borrowed titles are shown")
 
             borrowbox_books = {}
             book_num = 1
