@@ -26,24 +26,17 @@ def renew_library_books(page, user_list, today):
         login_button = page.locator('button[id="navbarLoginMenuLink1"]')
         login_button.wait_for(state='visible')
         login_button.click()
-        page.screenshot(path="debug_bolton_1b_after_login_click.png")
-
-        # debug: inspect every #user_name match to understand duplicates
-        all_user_name = page.locator("#user_name")
-        print(f"#user_name count: {all_user_name.count()}")
-        for i in range(all_user_name.count()):
-            el = all_user_name.nth(i)
-            print(f"  [{i}] visible={el.is_visible()} box={el.bounding_box()}")
+        page.screenshot(path="debug_bolton_after_login_click.png")
 
         # inserting credentials (use :visible since the page has a hidden duplicate login form for mobile)
-        try:
-            page.locator("#user_name:visible").wait_for(state="visible")
-        except PlaywrightTimeoutError:
-            page.screenshot(path="debug_bolton_2_login_panel.png")
-            raise
-        page.locator("#user_name:visible").fill(user[0])
-        page.locator("#user_password:visible").fill(user[1])
-        page.screenshot(path="debug_bolton_credentials_inserted.png")
+        user_name_area= page.locator("input[name='BRWILD']").wait_for(state="visible")
+        user_name_area.click()
+        page.screenshot(path="user_name.png")
+        page.locator("input[name='BRWLPWD]").fill(user[0])
+        password_area = page.locator("#user_password:visible")
+        password_area.click()
+        password_area.fill(user[1])
+        page.screenshot(path="password.png")
         page.locator(".btn-submit:visible").click()
 
         # find currently borrowed items
