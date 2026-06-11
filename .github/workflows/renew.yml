@@ -22,6 +22,24 @@ jobs:
           playwright install chromium
           playwright install-deps chromium
 
+      - name: Debug env vars (lengths only, no values)
+        env:
+          USER1_USERNAME: ${{ secrets.USER1_USERNAME }}
+          USER1_PASSWORD: ${{ secrets.USER1_PASSWORD }}
+          USER2_USERNAME: ${{ secrets.USER2_USERNAME }}
+          USER2_PASSWORD: ${{ secrets.USER2_PASSWORD }}
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+        run: |
+          echo "USER1_USERNAME length: ${#USER1_USERNAME}"
+          echo "USER1_PASSWORD length: ${#USER1_PASSWORD}"
+          echo "USER2_USERNAME length: ${#USER2_USERNAME}"
+          echo "USER2_PASSWORD length: ${#USER2_PASSWORD}"
+          echo "EMAIL_SENDER length: ${#EMAIL_SENDER}"
+          echo "EMAIL_PASSWORD length: ${#EMAIL_PASSWORD}"
+          echo "EMAIL_RECIPIENT length: ${#EMAIL_RECIPIENT}"
+
       - name: Run renewal script (continue on error for debugging)
         id: run_script
         continue-on-error: true
