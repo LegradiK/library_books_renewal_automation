@@ -28,6 +28,9 @@ def renew_library_books(page, user_list, today):
         login_button.click()
         page.screenshot(path="debug_bolton_after_login_click.png")
 
+        with open("debug_after_login_click.html", "w", encoding="utf-8") as f:
+            f.write(page.content())
+
         # inserting credentials (use :visible since the page has a hidden duplicate login form for mobile)
         user_name_area = page.locator("[placeholder='Borrower Id']:visible")
         user_name_area.wait_for(state="visible")
