@@ -33,7 +33,19 @@ def renew_library_books(page, user_list, today):
 
         # inserting credentials (use :visible since the page has a hidden duplicate login form for mobile)
         user_name_area = page.locator("[placeholder='Borrower Id']:visible")
-        user_name_area.wait_for(state="visible")
+
+        # the login dropdown sometimes fails to open on the first click right after
+        # the previous user's logout reloads the page (Bootstrap JS not yet attached) -
+        # retry the click until the form actually becomes visible
+        for _ in range(3):
+            try:
+                user_name_area.wait_for(state="visible", timeout=5000)
+                break
+            except PlaywrightTimeoutError:
+                login_button.click()
+        else:
+            user_name_area.wait_for(state="visible")
+
         user_name_area.click()
         user_name_area.fill(user[0])
         page.screenshot(path="user_name.png")
