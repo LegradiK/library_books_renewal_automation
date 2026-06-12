@@ -27,7 +27,7 @@ def renew_library_books(page, user_list, today):
     except PlaywrightTimeoutError:
         pass
 
-    _debug_screenshot(page, "debug_bolton_1_after_cookies.png")
+    # _debug_screenshot(page, "debug_bolton_1_after_cookies.png")
 
     page.wait_for_timeout(3000)
 
@@ -39,10 +39,10 @@ def renew_library_books(page, user_list, today):
         login_button = page.locator('button[id="navbarLoginMenuLink1"]')
         login_button.wait_for(state='visible')
         login_button.click()
-        _debug_screenshot(page, "debug_bolton_after_login_click.png")
+        # _debug_screenshot(page, "debug_bolton_after_login_click.png")
 
-        with open("debug_after_login_click.html", "w", encoding="utf-8") as f:
-            f.write(page.content())
+        # with open("debug_after_login_click.html", "w", encoding="utf-8") as f:
+        #     f.write(page.content())
 
         # inserting credentials (use :visible since the page has a hidden duplicate login form for mobile)
         user_name_area = page.locator("[placeholder='Borrower Id']:visible")
@@ -61,11 +61,11 @@ def renew_library_books(page, user_list, today):
 
         user_name_area.click()
         user_name_area.fill(user[0])
-        _debug_screenshot(page, "user_name.png")
+        # _debug_screenshot(page, "user_name.png")
         password_area = page.locator("[placeholder='Password']:visible")
         password_area.click()
         password_area.fill(user[1])
-        _debug_screenshot(page, "password.png")
+        # _debug_screenshot(page, "password.png")
         page.locator(".btn-submit:visible").click()
 
         # find currently borrowed items
