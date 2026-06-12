@@ -9,7 +9,7 @@ def _badge(text, color, background):
 
 
 def _cell_html(result):
-    if result.get("no_items"):
+    if result.get("no_items") or result.get("currently_borrowing") == 0:
         return '<p style="margin:0;font-size:13px;color:#666;">No items currently borrowed.</p>'
 
     currently_borrowing = result["currently_borrowing"]
@@ -67,9 +67,8 @@ def build_html_report(results, today):
             users.append(r["user"])
         grid[(r["library"], r["user"])] = r
 
-    # the row-header column (library names) is 1.5x wider than the data columns
-    data_col_width = 100 / (len(users) + 1.5) if users else 100
-    header_col_width = data_col_width * 1.5
+    data_col_width = 250 / (len(users) + 1.5) if users else 250
+    header_col_width = data_col_width * 0.5
 
     header_style = (
         'padding:12px 16px;border:1px solid #eee;background:#eef1f5;'
@@ -98,7 +97,7 @@ def build_html_report(results, today):
     return f"""\
 <html>
   <body style="margin:0;padding:20px;background:#f4f4f7;font-family:Arial,Helvetica,sans-serif;color:#333;">
-    <table role="presentation" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #e0e0e0;border-collapse:collapse;">
+    <table role="presentation" style="max-width:1200px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #e0e0e0;border-collapse:collapse;">
       <tr>
         <td style="background:#2d3e50;color:#ffffff;padding:20px 24px;">
           <p style="margin:0;font-size:18px;font-weight:600;">\U0001f4da Library Renewal Report</p>
@@ -114,7 +113,7 @@ def build_html_report(results, today):
       </tr>
       <tr>
         <td style="padding:12px 24px;background:#f4f4f7;font-size:11px;color:#999;text-align:center;">
-          Generated automatically
+          Manage your accounts: <a href="https://bolton.spydus.co.uk/cgi-bin/spydus.exe/MSGTRN/OPAC/HOME" style="color:#999;font-weight:600;text-decoration:none">Bolton Library</a> & <a href="https://bolton.borrowbox.com/" style="color:#999;font-weight:600;text-decoration:none">BorrowBox</a>
         </td>
       </tr>
     </table>
@@ -127,7 +126,7 @@ def build_text_report(results, today):
     lines = [f"Library Renewal Report - {today}", ""]
     for r in results:
         lines.append(f"{r['user']} - {r['library']}")
-        if r.get("no_items"):
+        if r.get("no_items") or r.get("currently_borrowing") == 0:
             lines.append("  No items currently borrowed.")
         else:
             lines.append(f"  Currently borrowing: {r['currently_borrowing']}")
