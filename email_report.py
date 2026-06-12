@@ -76,7 +76,7 @@ def build_html_report(results, today):
     col_width = 100 / len(users) if users else 100
 
     grid_rows = ""
-    for library in libraries in range(3):
+    for library in libraries:
         cells = ""
         for user in users:
             result = grid.get((library, user))
