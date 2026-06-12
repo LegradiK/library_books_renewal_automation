@@ -106,7 +106,7 @@ def renew_library_books(page, user_list, today):
             for book_num, book in library_books.items():
                 # check if due date is closer than x days and check the tickbox
                 day_dfference = (book["due_date"] - today).days
-                if day_dfference <= 20:
+                if day_dfference <= 3:
                     if book["renewed"] >= 2:
                         must_return_books.append(book)
                     else:
