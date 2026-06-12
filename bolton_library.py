@@ -37,7 +37,7 @@ def renew_library_books(page, user_list, today):
         # the login dropdown sometimes fails to open on the first click right after
         # the previous user's logout reloads the page (Bootstrap JS not yet attached) -
         # retry the click until the form actually becomes visible
-        for _ in range(3):
+        for attempt in range(3):
             try:
                 user_name_area.wait_for(state="visible", timeout=5000)
                 break
@@ -119,8 +119,8 @@ def renew_library_books(page, user_list, today):
 
         finally:
             try:
-                page.locator("#navbarLoginMenuLinkName").wait_for(state="visible", timeout=10000)
-                page.locator("#navbarLoginMenuLinkName").click()
+                page.get_by_role("link", name="Show account menu").wait_for(state="visible", timeout=10000)
+                page.get_by_role("link", name="Show account menu").click()
                 page.get_by_role("link", name="Logout").first.click()
             except PlaywrightTimeoutError:
                 print(f"Could not log out user {user[0]} — login may have failed")
