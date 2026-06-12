@@ -67,9 +67,9 @@ def build_html_report(results, today):
             users.append(r["user"])
         grid[(r["library"], r["user"])] = r
 
-    # the data columns (one per user) are 1.5x wider than the header column
-    header_col_width = 100 / (1.5 * len(users) + 1) if users else 100
-    data_col_width = header_col_width * 1.5
+    # the row-header column (library names) is 1.5x wider than the data columns
+    data_col_width = 100 / (len(users) + 1.5) if users else 100
+    header_col_width = data_col_width * 1.5
 
     header_style = (
         'padding:12px 16px;border:1px solid #eee;background:#eef1f5;'
