@@ -21,6 +21,8 @@ def renew_library_books(page, user_list, today):
 
     page.wait_for_timeout(3000)
 
+    results = []
+
     for user in user_list:
 
         # clicking login button to show login area
@@ -64,6 +66,11 @@ def renew_library_books(page, user_list, today):
                        f"Library: Bolton\n"
                        f"No borrowed items found\n")
             print(message)
+            results.append({
+                "user": user[0],
+                "library": "Bolton Library",
+                "no_items": True,
+            })
         else:
             page.locator(".brw-dashboard-item").first.click()
 
@@ -106,7 +113,7 @@ def renew_library_books(page, user_list, today):
             for book_num, book in library_books.items():
                 # check if due date is closer than x days and check the tickbox
                 day_dfference = (book["due_date"] - today).days
-                if day_dfference <= 3:
+                if day_dfference <= 5:
                     if book["renewed"] >= 2:
                         must_return_books.append(book)
                     else:
@@ -130,6 +137,15 @@ def renew_library_books(page, user_list, today):
             )
             print(message)
 
+            results.append({
+                "user": user[0],
+                "library": "Bolton Library",
+                "no_items": False,
+                "currently_borrowing": len(library_books),
+                "renewed_count": len(renew_books),
+                "must_return": [{"title": b["title"], "due_date": b["due_date"]} for b in must_return_books],
+            })
+
         finally:
             try:
                 page.get_by_role("link", name="Show account menu").wait_for(state="visible", timeout=10000)
@@ -138,5 +154,4 @@ def renew_library_books(page, user_list, today):
             except PlaywrightTimeoutError:
                 print(f"Could not log out user {user[0]} — login may have failed")
 
-
-
+    return results

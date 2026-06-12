@@ -15,6 +15,8 @@ def renew_borrowbox_books(page, user_list, today):
 
     page.wait_for_timeout(3000)
 
+    results = []
+
     for user in user_list:
         # click login button
         login_button = page.get_by_role("link", name="Sign In")
@@ -37,6 +39,11 @@ def renew_borrowbox_books(page, user_list, today):
             message = (f"User: {user[0]}\n"
                   f"No borrowed items found")
             print(message)
+            results.append({
+                "user": user[0],
+                "library": "BorrowBox",
+                "no_items": True,
+            })
         else:
             rows = page.locator(".loaned-product-tile").all()
 
@@ -61,7 +68,7 @@ def renew_borrowbox_books(page, user_list, today):
                 book_num += 1
 
             for book_num, book in borrowbox_books.items():
-                if book["due_in_days"] <= 30:
+                if book["due_in_days"] <= 5:
                     if book["row"].locator("button", has_text="Renew").count() > 0:
                         book["row"].locator("button", has_text="Renew").click()
                         renew_books.append(book)
@@ -95,8 +102,19 @@ def renew_borrowbox_books(page, user_list, today):
             )
             print(message)
 
+            results.append({
+                "user": user[0],
+                "library": "BorrowBox",
+                "no_items": False,
+                "currently_borrowing": len(borrowbox_books),
+                "renewed_count": len(renew_books),
+                "must_return": [{"title": b["title"], "due_date": b["expiry_date"]} for b in return_books],
+            })
+
         finally:
             # clicking user menu and logout
             # print("Log out")
             page.get_by_role("button", name="Account status").click()
             page.get_by_text("Sign Out", exact=True).click()
+
+    return results
