@@ -8,7 +8,7 @@ def _badge(text, color, background):
     )
 
 
-def _section_html(result):
+def _cell_html(result):
     user = html.escape(result["user"])
     library = html.escape(result["library"])
 
@@ -54,15 +54,39 @@ def _section_html(result):
             body += '<p style="margin:12px 0 0;font-size:13px;color:#1e7e34;">✅ Nothing due back soon</p>'
 
     return (
-        '<tr><td style="padding:16px 24px;border-bottom:1px solid #eee;">'
         f'<p style="margin:0 0 4px;font-size:15px;font-weight:600;color:#2d3e50;">{user} &middot; {library}</p>'
         f'{body}'
-        '</td></tr>'
     )
 
 
 def build_html_report(results, today):
-    sections = "".join(_section_html(r) for r in results)
+    # group into a grid: one row per library, one column per user, in order of
+    # first appearance, so the layout is library x user regardless of the
+    # order results were collected in
+    libraries = []
+    users = []
+    grid = {}
+    for r in results:
+        if r["library"] not in libraries:
+            libraries.append(r["library"])
+        if r["user"] not in users:
+            users.append(r["user"])
+        grid[(r["library"], r["user"])] = r
+
+    col_width = 100 / len(users) if users else 100
+
+    grid_rows = ""
+    for library in libraries:
+        cells = ""
+        for user in users:
+            result = grid.get((library, user))
+            content = _cell_html(result) if result else ""
+            cells += (
+                f'<td style="width:{col_width:.4f}%;padding:16px;border:1px solid #eee;vertical-align:top;">'
+                f'{content}</td>'
+            )
+        grid_rows += f'<tr>{cells}</tr>'
+
     return f"""\
 <html>
   <body style="margin:0;padding:20px;background:#f4f4f7;font-family:Arial,Helvetica,sans-serif;color:#333;">
@@ -73,7 +97,13 @@ def build_html_report(results, today):
           <p style="margin:4px 0 0;font-size:13px;opacity:0.8;">{today.strftime('%A, %d %B %Y')}</p>
         </td>
       </tr>
-      {sections}
+      <tr>
+        <td style="padding:0;">
+          <table role="presentation" style="width:100%;table-layout:fixed;border-collapse:collapse;">
+            {grid_rows}
+          </table>
+        </td>
+      </tr>
       <tr>
         <td style="padding:12px 24px;background:#f4f4f7;font-size:11px;color:#999;text-align:center;">
           Generated automatically
