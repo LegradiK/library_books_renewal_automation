@@ -1,5 +1,6 @@
+import re
 from datetime import datetime
-from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, expect
 
 
 def renew_library_books(page, user_list, today):
@@ -66,6 +67,18 @@ def renew_library_books(page, user_list, today):
         else:
             page.locator(".brw-dashboard-item").first.click()
 
+            # clicking the dashboard tile triggers an async load of the loans
+            # table - wait for the "Showing X - Y of Z" summary and for that
+            # many titles to render before scraping, otherwise we can catch
+            # the table mid-load and miss rows
+            try:
+                showing_text = page.get_by_text(re.compile(r"Showing \d+\s*-\s*\d+ of \d+"))
+                showing_text.wait_for(state="visible", timeout=10000)
+                total_books = int(re.search(r"of (\d+)", showing_text.inner_text()).group(1))
+                expect(page.locator("h3.card-title")).to_have_count(total_books, timeout=10000)
+            except PlaywrightTimeoutError:
+                pass
+
             # check borrowed books
             library_books = {}
             rows = page.locator("tr").all()
@@ -111,7 +124,7 @@ def renew_library_books(page, user_list, today):
             message = (
                 f"User: {user[0]}\n"
                 f"Library:Bolton\n"
-                f"Currently Borrowing: {book_num}\n"
+                f"Currently Borrowing: {len(library_books)}\n"
                 f"Must return:{due_lines}\n"
                 f"*{len(renew_books)} {book_word} got renewed.*\n"
             )
