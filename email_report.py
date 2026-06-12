@@ -9,59 +9,53 @@ def _badge(text, color, background):
 
 
 def _cell_html(result):
-    user = html.escape(result["user"])
-    library = html.escape(result["library"])
-
     if result.get("no_items"):
-        body = '<p style="margin:8px 0 0;font-size:13px;color:#666;">No items currently borrowed.</p>'
-    else:
-        currently_borrowing = result["currently_borrowing"]
-        renewed_count = result["renewed_count"]
-        must_return = result.get("must_return", [])
+        return '<p style="margin:0;font-size:13px;color:#666;">No items currently borrowed.</p>'
 
-        renewed_badge = _badge(
-            f"{renewed_count} renewed" if renewed_count else "none renewed",
-            "#1e7e34" if renewed_count else "#666",
-            "#e6f4ea" if renewed_count else "#eee",
-        )
+    currently_borrowing = result["currently_borrowing"]
+    renewed_count = result["renewed_count"]
+    must_return = result.get("must_return", [])
 
-        body = (
-            f'<p style="margin:8px 0;font-size:14px;">'
-            f'Currently borrowing <strong>{currently_borrowing}</strong>'
-            f'&nbsp;&nbsp;{renewed_badge}</p>'
-        )
-
-        if must_return:
-            rows = "".join(
-                '<tr>'
-                f'<td style="padding:6px 10px;border:1px solid #f5c6cb;font-size:13px;">{html.escape(b["title"])}</td>'
-                f'<td style="padding:6px 10px;border:1px solid #f5c6cb;font-size:13px;white-space:nowrap;">{b["due_date"]}</td>'
-                '</tr>'
-                for b in must_return
-            )
-            body += (
-                '<p style="margin:12px 0 4px;font-size:13px;font-weight:600;color:#a94442;">'
-                '⚠️ Must return soon</p>'
-                '<table role="presentation" style="width:100%;border-collapse:collapse;">'
-                '<tr style="background:#fdecea;color:#a94442;">'
-                '<th style="text-align:left;padding:6px 10px;border:1px solid #f5c6cb;font-size:12px;">Title</th>'
-                '<th style="text-align:left;padding:6px 10px;border:1px solid #f5c6cb;font-size:12px;">Due date</th>'
-                '</tr>'
-                f'{rows}'
-                '</table>'
-            )
-        else:
-            body += '<p style="margin:12px 0 0;font-size:13px;color:#1e7e34;">Nothing due back soon</p>'
-
-    return (
-        f'<p style="margin:0 0 4px;font-size:15px;font-weight:600;color:#2d3e50;">{user} &middot; {library}</p>'
-        f'{body}'
+    renewed_badge = _badge(
+        f"{renewed_count} renewed" if renewed_count else "none renewed",
+        "#1e7e34" if renewed_count else "#666",
+        "#e6f4ea" if renewed_count else "#eee",
     )
+
+    body = (
+        f'<p style="margin:0 0 8px;font-size:14px;">'
+        f'Currently borrowing <strong>{currently_borrowing}</strong>'
+        f'&nbsp;&nbsp;{renewed_badge}</p>'
+    )
+
+    if must_return:
+        rows = "".join(
+            '<tr>'
+            f'<td style="padding:6px 10px;border:1px solid #f5c6cb;font-size:13px;">{html.escape(b["title"])}</td>'
+            f'<td style="padding:6px 10px;border:1px solid #f5c6cb;font-size:13px;white-space:nowrap;">{b["due_date"]}</td>'
+            '</tr>'
+            for b in must_return
+        )
+        body += (
+            '<p style="margin:12px 0 4px;font-size:13px;font-weight:600;color:#a94442;">'
+            '⚠️ Must return soon</p>'
+            '<table role="presentation" style="width:100%;border-collapse:collapse;">'
+            '<tr style="background:#fdecea;color:#a94442;">'
+            '<th style="text-align:left;padding:6px 10px;border:1px solid #f5c6cb;font-size:12px;">Title</th>'
+            '<th style="text-align:left;padding:6px 10px;border:1px solid #f5c6cb;font-size:12px;">Due date</th>'
+            '</tr>'
+            f'{rows}'
+            '</table>'
+        )
+    else:
+        body += '<p style="margin:12px 0 0;font-size:13px;color:#1e7e34;">Nothing due back soon</p>'
+
+    return body
 
 
 def build_html_report(results, today):
-    # group into a grid: one row per library, one column per user, in order of
-    # first appearance, so the layout is library x user regardless of the
+    # group into a grid: one column per library, one row per user, in order
+    # of first appearance, so the layout is user x library regardless of the
     # order results were collected in
     libraries = []
     users = []
@@ -73,19 +67,36 @@ def build_html_report(results, today):
             users.append(r["user"])
         grid[(r["library"], r["user"])] = r
 
-    col_width = 100 / len(users) if users else 100
+    header_col_width = 100 / (len(libraries) + 1) if libraries else 100
+    data_col_width = header_col_width
 
-    grid_rows = ""
-    for library in libraries:
-        cells = ""
-        for user in users:
+    header_style = (
+        'padding:12px 16px;border:1px solid #eee;background:#eef1f5;'
+        'font-size:13px;font-weight:600;color:#2d3e50;text-align:center;vertical-align:middle;'
+    )
+    corner_style = (
+        'padding:12px 16px;border:1px solid #eee;'
+        'background:linear-gradient(135deg, transparent calc(50% - 1px), #ccc calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px));'
+    )
+    data_style = 'padding:16px;border:1px solid #eee;vertical-align:top;'
+
+    # header row: corner cell + one cell per library (column headers)
+    corner_cell = f'<td style="width:{header_col_width:.4f}%;{corner_style}"></td>'
+    library_header_cells = "".join(
+        f'<td style="width:{data_col_width:.4f}%;{header_style}">{html.escape(library)}</td>'
+        for library in libraries
+    )
+    grid_rows = f'<tr>{corner_cell}{library_header_cells}</tr>'
+
+    # one row per user: row header cell (user name) + one data cell per library
+    for user in users:
+        user_header_cell = f'<td style="width:{header_col_width:.4f}%;{header_style}">{html.escape(user)}</td>'
+        data_cells = ""
+        for library in libraries:
             result = grid.get((library, user))
             content = _cell_html(result) if result else ""
-            cells += (
-                f'<td style="width:{col_width:.4f}%;padding:16px;border:1px solid #eee;vertical-align:top;">'
-                f'{content}</td>'
-            )
-        grid_rows += f'<tr>{cells}</tr>'
+            data_cells += f'<td style="width:{data_col_width:.4f}%;{data_style}">{content}</td>'
+        grid_rows += f'<tr>{user_header_cell}{data_cells}</tr>'
 
     return f"""\
 <html>
