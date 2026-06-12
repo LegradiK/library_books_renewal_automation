@@ -51,7 +51,7 @@ def _cell_html(result):
                 '</table>'
             )
         else:
-            body += '<p style="margin:12px 0 0;font-size:13px;color:#1e7e34;">✅ Nothing due back soon</p>'
+            body += '<p style="margin:12px 0 0;font-size:13px;color:#1e7e34;">Nothing due back soon</p>'
 
     return (
         f'<p style="margin:0 0 4px;font-size:15px;font-weight:600;color:#2d3e50;">{user} &middot; {library}</p>'
