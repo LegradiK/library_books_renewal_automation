@@ -83,8 +83,8 @@ def renew_library_books(page, user_list, today):
                 library_books[book_num] = {"title": title, "due_date": due_date_obj, "renewed": renewed}
                 book_num += 1
 
-            # print(library_books)
-            # print(f"{len(library_books)} books borrowed")
+            print(library_books)
+            print(f"{len(library_books)} books borrowed")
 
             renew_books = []
             must_return_books = []
