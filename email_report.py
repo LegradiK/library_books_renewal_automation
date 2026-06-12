@@ -54,8 +54,8 @@ def _cell_html(result):
 
 
 def build_html_report(results, today):
-    # group into a grid: one column per library, one row per user, in order
-    # of first appearance, so the layout is user x library regardless of the
+    # group into a grid: one row per library, one column per user, in order
+    # of first appearance, so the layout is library x user regardless of the
     # order results were collected in
     libraries = []
     users = []
@@ -67,36 +67,33 @@ def build_html_report(results, today):
             users.append(r["user"])
         grid[(r["library"], r["user"])] = r
 
-    header_col_width = 100 / (len(libraries) + 1) if libraries else 100
-    data_col_width = header_col_width
+    # the row-header column (library names) is 1.5x wider than the data columns
+    data_col_width = 100 / (len(users) + 1.5) if users else 100
+    header_col_width = data_col_width * 1.5
 
     header_style = (
         'padding:12px 16px;border:1px solid #eee;background:#eef1f5;'
         'font-size:13px;font-weight:600;color:#2d3e50;text-align:center;vertical-align:middle;'
     )
-    corner_style = (
-        'padding:12px 16px;border:1px solid #eee;'
-        'background:linear-gradient(135deg, transparent calc(50% - 1px), #ccc calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px));'
-    )
     data_style = 'padding:16px;border:1px solid #eee;vertical-align:top;'
 
-    # header row: corner cell + one cell per library (column headers)
-    corner_cell = f'<td style="width:{header_col_width:.4f}%;{corner_style}"></td>'
-    library_header_cells = "".join(
-        f'<td style="width:{data_col_width:.4f}%;{header_style}">{html.escape(library)}</td>'
-        for library in libraries
+    # header row: corner cell + one cell per user (column headers)
+    corner_cell = f'<td style="width:{header_col_width:.4f}%;{header_style}"></td>'
+    user_header_cells = "".join(
+        f'<td style="width:{data_col_width:.4f}%;{header_style}">{html.escape(user)}</td>'
+        for user in users
     )
-    grid_rows = f'<tr>{corner_cell}{library_header_cells}</tr>'
+    grid_rows = f'<tr>{corner_cell}{user_header_cells}</tr>'
 
-    # one row per user: row header cell (user name) + one data cell per library
-    for user in users:
-        user_header_cell = f'<td style="width:{header_col_width:.4f}%;{header_style}">{html.escape(user)}</td>'
+    # one row per library: row header cell (library name) + one data cell per user
+    for library in libraries:
+        library_header_cell = f'<td style="width:{header_col_width:.4f}%;{header_style}">{html.escape(library)}</td>'
         data_cells = ""
-        for library in libraries:
+        for user in users:
             result = grid.get((library, user))
             content = _cell_html(result) if result else ""
             data_cells += f'<td style="width:{data_col_width:.4f}%;{data_style}">{content}</td>'
-        grid_rows += f'<tr>{user_header_cell}{data_cells}</tr>'
+        grid_rows += f'<tr>{library_header_cell}{data_cells}</tr>'
 
     return f"""\
 <html>
