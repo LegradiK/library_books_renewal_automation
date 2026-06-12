@@ -83,8 +83,8 @@ def renew_library_books(page, user_list, today):
                 library_books[book_num] = {"title": title, "due_date": due_date_obj, "renewed": renewed}
                 book_num += 1
 
-            print(library_books)
-            print(f"{len(library_books)} books borrowed")
+            # print(library_books)
+            # print(f"{len(library_books)} books borrowed")
 
             renew_books = []
             must_return_books = []
@@ -111,7 +111,7 @@ def renew_library_books(page, user_list, today):
             message = (
                 f"User: {user[0]}\n"
                 f"Library:Bolton\n"
-                f"Currently Borrowing: {len(library_books)}\n"
+                f"Currently Borrowing: {book_num}\n"
                 f"Must return:{due_lines}\n"
                 f"*{len(renew_books)} {book_word} got renewed.*\n"
             )
