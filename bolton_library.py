@@ -3,6 +3,16 @@ from datetime import datetime
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, expect
 
 
+def _debug_screenshot(page, path):
+    # debug screenshots are only used as CI artifacts - headless Chromium can
+    # hang waiting for fonts to load when taking a screenshot, so don't let a
+    # slow/failed capture crash the whole run
+    try:
+        page.screenshot(path=path, timeout=10000)
+    except PlaywrightTimeoutError:
+        print(f"Could not capture debug screenshot {path} (timed out)")
+
+
 def renew_library_books(page, user_list, today):
     BOLTON_SPYDUS = "https://bolton.spydus.co.uk/cgi-bin/spydus.exe/MSGTRN/OPAC/HOME"
 
@@ -17,7 +27,7 @@ def renew_library_books(page, user_list, today):
     except PlaywrightTimeoutError:
         pass
 
-    page.screenshot(path="debug_bolton_1_after_cookies.png")
+    _debug_screenshot(page, "debug_bolton_1_after_cookies.png")
 
     page.wait_for_timeout(3000)
 
@@ -29,7 +39,7 @@ def renew_library_books(page, user_list, today):
         login_button = page.locator('button[id="navbarLoginMenuLink1"]')
         login_button.wait_for(state='visible')
         login_button.click()
-        page.screenshot(path="debug_bolton_after_login_click.png")
+        _debug_screenshot(page, "debug_bolton_after_login_click.png")
 
         with open("debug_after_login_click.html", "w", encoding="utf-8") as f:
             f.write(page.content())
@@ -51,11 +61,11 @@ def renew_library_books(page, user_list, today):
 
         user_name_area.click()
         user_name_area.fill(user[0])
-        page.screenshot(path="user_name.png")
+        _debug_screenshot(page, "user_name.png")
         password_area = page.locator("[placeholder='Password']:visible")
         password_area.click()
         password_area.fill(user[1])
-        page.screenshot(path="password.png")
+        _debug_screenshot(page, "password.png")
         page.locator(".btn-submit:visible").click()
 
         # find currently borrowed items
