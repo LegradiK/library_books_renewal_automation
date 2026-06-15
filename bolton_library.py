@@ -109,7 +109,10 @@ def renew_library_books(page, user_list, today):
                 due_date_obj = datetime.strptime(extracted_date, "%A, %d %B %Y").date()
                 status_loc = row.locator('td[data-caption="Status"] span')
                 status_text = status_loc.first.inner_text() if status_loc.count() > 0 else ""
-                renewed = int(status_text.replace("Renewed", "").replace(" times", "").replace(" time", "").strip()) if status_text else 0
+                if "Renewed" in status_text:
+                    renewed = int(status_text.replace("Renewed", "").replace(" times", "").replace(" time", "").strip())
+                else:
+                    renewed = 0
                 library_books[book_num] = {"title": title, "due_date": due_date_obj, "renewed": renewed}
                 book_num += 1
 
