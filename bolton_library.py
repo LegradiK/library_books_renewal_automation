@@ -12,6 +12,14 @@ def _debug_screenshot(page, path):
     except PlaywrightTimeoutError:
         print(f"Could not capture debug screenshot {path} (timed out)")
 
+def parse_due_date(extracted_date):
+    for fmt in ("%d %b %Y", "%A, %d %B %Y", "%d %B %Y"):
+        try:
+            return datetime.strptime(extracted_date, fmt).date()
+        except ValueError:
+            continue
+    raise ValueError(f"Unrecognized date format: {extracted_date!r}")
+
 
 def renew_library_books(page, user_list, today):
     BOLTON_SPYDUS = "https://bolton.spydus.co.uk/cgi-bin/spydus.exe/MSGTRN/OPAC/HOME"
@@ -106,7 +114,7 @@ def renew_library_books(page, user_list, today):
                     continue
                 title = row.locator("h3.card-title").first.inner_text()
                 extracted_date = row.locator('td[data-caption="Due"] span').first.inner_text()
-                due_date_obj = datetime.strptime(extracted_date, "%A, %d %B %Y").date()
+                due_date_obj = parse_due_date(extracted_date)
                 status_loc = row.locator('td[data-caption="Status"] span')
                 status_text = status_loc.first.inner_text() if status_loc.count() > 0 else ""
                 if "Renewed" in status_text:
