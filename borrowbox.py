@@ -19,8 +19,8 @@ def renew_borrowbox_books(page, user_list, today):
 
     for user in user_list:
         # click login button
-        login_button = page.get_by_role("link", name="Sign In")
-        login_button.wait_for(state='visible')
+        login_button = page.get_by_role("button", name="Log in")
+        login_button.wait_for(state="visible")
         login_button.click()
 
         #insert credentials to login
