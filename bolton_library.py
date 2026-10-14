@@ -44,8 +44,8 @@ def renew_library_books(page, user_list, today):
     for user in user_list:
 
         # clicking login button to show login area
-        login_button = page.locator('button[id="navbarLoginMenuLink1"]')
-        login_button.wait_for(state='visible')
+        login_button = page.get_by_role("button", name="Log in")
+        login_button.wait_for(state="visible")
         login_button.click()
         # _debug_screenshot(page, "debug_bolton_after_login_click.png")
 
