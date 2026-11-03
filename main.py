@@ -29,14 +29,21 @@ user_list = [[USER1_USERNAME, USER1_PASSWORD], [USER2_USERNAME, USER2_PASSWORD]]
 
 today = date.today()
 
+on_ci = os.getenv("GITHUB_ACTIONS") == "true"
+
+# locally: print live so you can follow along; on CI: capture for the email
 buffer = io.StringIO()
-sys.stdout = buffer
+if on_ci:
+    sys.stdout = buffer
 
 results = []
 
 try:
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        headless = on_ci or os.getenv("HEADLESS") == "1"
+        slow_mo = 0 if on_ci else int(os.getenv("SLOW_MO", "300"))
+
+        browser = pw.chromium.launch(headless=headless, slow_mo=slow_mo)
         context = browser.new_context(viewport={"width": 1920, "height": 1080})
         page = context.new_page()
 

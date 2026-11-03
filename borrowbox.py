@@ -13,23 +13,39 @@ def _accept_cookies(page):
         pass
 
 
+def _sign_in(page, user):
+    page.goto(BOLTON_BORROWBOX_LOGIN, wait_until="domcontentloaded", timeout=60000)
+    _accept_cookies(page)
+
+    barcode = page.locator("input[name='barcode']:visible")
+    try:
+        barcode.wait_for(state="visible", timeout=15000)
+    except PlaywrightTimeoutError:
+        # save evidence of what the page actually showed
+        safe_id = re.sub(r"\W", "", str(user[0]))[-4:] or "user"
+        shot = f"borrowbox_login_fail_{safe_id}.png"
+        page.screenshot(path=shot, full_page=True)
+        print(f"BorrowBox login form not found. URL: {page.url} | screenshot: {shot}")
+        raise
+
+    barcode.fill(user[0])
+    page.locator("input[name='password']:visible").fill(user[1])
+    page.locator("button.signin-button[type='submit']:visible").click()
+
+
 def renew_borrowbox_books(page, user_list, today):
     results = []
+    browser = page.context.browser
 
     for user in user_list:
-        # start each user from a clean, signed-out state
-        page.context.clear_cookies()
-        page.goto(BOLTON_BORROWBOX_LOGIN, wait_until="domcontentloaded", timeout=60000)
-        _accept_cookies(page)
-
-        # insert credentials and sign in
-        barcode = page.locator("input[name='barcode']:visible")
-        barcode.wait_for(state="visible", timeout=15000)
-        barcode.fill(user[0])
-        page.locator("input[name='password']:visible").fill(user[1])
-        page.locator("button.signin-button[type='submit']:visible").click()
+        # a brand-new context per user = no cookies, localStorage or sessionStorage
+        # carried over from the previous user, so the login form always appears
+        context = browser.new_context()
+        page = context.new_page()
 
         try:
+            _sign_in(page, user)
+
             # open currently borrowing books page
             my_loans = page.get_by_role("link", name="My Loans")
             my_loans.wait_for(state="visible", timeout=15000)
@@ -133,11 +149,7 @@ def renew_borrowbox_books(page, user_list, today):
             })
 
         finally:
-            # sign out (don't let a failed sign-out hide the real error)
-            try:
-                page.get_by_role("button", name="Account status").click(timeout=10000)
-                page.get_by_text("Sign Out", exact=True).click(timeout=10000)
-            except PlaywrightTimeoutError:
-                print(f"Could not sign out BorrowBox user {user[0]} - sign-in may have failed")
+            # discarding the context signs the user out locally - no UI sign-out needed
+            context.close()
 
     return results
