@@ -40,10 +40,14 @@ results = []
 
 try:
     with sync_playwright() as pw:
-        headless = on_ci or os.getenv("HEADLESS") == "1"
-        slow_mo = 0 if on_ci else int(os.getenv("SLOW_MO", "300"))
+        browser = pw.chromium.launch(headless=True, slow_mo=300, channel="chromium")
 
-        browser = pw.chromium.launch(headless=headless, slow_mo=slow_mo)
+        # --- debug: show the browser and slow it down ---
+        # (comment out the line above and uncomment these to use it)
+        # headless = on_ci or os.getenv("HEADLESS") == "1"
+        # slow_mo = 0 if on_ci else int(os.getenv("SLOW_MO", "300"))
+        # browser = pw.chromium.launch(headless=headless, slow_mo=slow_mo)
+
         context = browser.new_context(viewport={"width": 1920, "height": 1080})
         page = context.new_page()
 

@@ -15,6 +15,10 @@ def _accept_cookies(page):
 
 def _sign_in(page, user):
     page.goto(BOLTON_BORROWBOX_LOGIN, wait_until="domcontentloaded", timeout=60000)
+    try:
+        page.wait_for_load_state("networkidle", timeout=15000)
+    except PlaywrightTimeoutError:
+        pass  # some sites never go fully idle; carry on anyway
     _accept_cookies(page)
 
     barcode = page.locator("input[name='barcode']:visible")
@@ -37,10 +41,18 @@ def renew_borrowbox_books(page, user_list, today):
     results = []
     browser = page.context.browser
 
+    # look like a normal Chrome, not "HeadlessChrome" (CloudFront blocks that)
+    real_ua = (
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+        f"(KHTML, like Gecko) Chrome/{browser.version} Safari/537.36"
+    )
+
     for user in user_list:
-        # a brand-new context per user = no cookies, localStorage or sessionStorage
-        # carried over from the previous user, so the login form always appears
-        context = browser.new_context()
+        context = browser.new_context(
+            viewport={"width": 1920, "height": 1080},
+            user_agent=real_ua,
+            locale="en-GB",
+        )
         page = context.new_page()
 
         try:
