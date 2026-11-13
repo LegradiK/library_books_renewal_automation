@@ -57,7 +57,9 @@ try:
                 results += fn(page, user_list, today)
             except Exception as e:
                 print(f"{name} failed: {type(e).__name__}: {e}")
-                results.append({"user": "-", "library": name, "error": str(e)})
+                short_error = str(e).splitlines()[0]
+                for user in user_list:
+                    results.append({"user": user[0], "library": name, "error": short_error})
 finally:
     sys.stdout = sys.__stdout__
 

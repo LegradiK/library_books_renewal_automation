@@ -9,6 +9,12 @@ def _badge(text, color, background):
 
 
 def _cell_html(result):
+    if result.get("error"):
+        return (
+            '<p style="margin:0;font-size:13px;color:#a94442;">'
+            f'⚠️ Check failed: {html.escape(result["error"])}<br>'
+            'Please check this account manually.</p>'
+        )
     if result.get("no_items") or result.get("currently_borrowing") == 0:
         return '<p style="margin:0;font-size:13px;color:#666;">No items currently borrowed.</p>'
 
@@ -126,9 +132,10 @@ def build_text_report(results, today):
     lines = [f"Library Renewal Report - {today}", ""]
     for r in results:
         lines.append(f"{r['user']} - {r['library']}")
-        if r.get("no_items") or r.get("currently_borrowing") == 0:
-            lines.append("  No items currently borrowed.")
-        else:
+        if r.get("error"):
+            lines.append(f"  CHECK FAILED: {r['error']}")
+            lines.append("  Please check this account manually.")
+        elif r.get("no_items") or r.get("currently_borrowing") == 0:
             lines.append(f"  Currently borrowing: {r['currently_borrowing']}")
             lines.append(f"  Renewed: {r['renewed_count']}")
             must_return = r.get("must_return", [])
