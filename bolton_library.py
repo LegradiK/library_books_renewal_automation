@@ -35,6 +35,9 @@ def renew_library_books(page, user_list, today):
     except PlaywrightTimeoutError:
         pass
 
+    if "confirm you are human" in page.title().lower():
+        raise RuntimeError("Bolton site showed a CAPTCHA (bot check) - please renew manually")
+
     # _debug_screenshot(page, "debug_bolton_1_after_cookies.png")
 
     page.wait_for_timeout(3000)
