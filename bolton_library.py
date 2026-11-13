@@ -45,7 +45,13 @@ def renew_library_books(page, user_list, today):
 
         # clicking login button to show login area
         login_button = page.get_by_role("button", name="Log in")
-        login_button.wait_for(state="visible")
+        try:
+            login_button.wait_for(state="visible", timeout=30000)
+        except PlaywrightTimeoutError:
+            _debug_screenshot(page, "debug_bolton_no_login.png")
+            with open("debug_bolton_no_login.html", "w", encoding="utf-8") as f:
+                f.write(page.content())
+            raise
         login_button.click()
         # _debug_screenshot(page, "debug_bolton_after_login_click.png")
 

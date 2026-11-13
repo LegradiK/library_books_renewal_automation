@@ -51,8 +51,13 @@ try:
         context = browser.new_context(viewport={"width": 1920, "height": 1080})
         page = context.new_page()
 
-        results += renew_library_books(page, user_list, today)
-        results += renew_borrowbox_books(page, user_list, today)
+        for name, fn in (("Bolton Library", renew_library_books),
+                         ("BorrowBox", renew_borrowbox_books)):
+            try:
+                results += fn(page, user_list, today)
+            except Exception as e:
+                print(f"{name} failed: {type(e).__name__}: {e}")
+                results.append({"user": "-", "library": name, "error": str(e)})
 finally:
     sys.stdout = sys.__stdout__
 
